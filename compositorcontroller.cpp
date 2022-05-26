@@ -2395,4 +2395,42 @@ namespace RdkShell
 
         return true;
     }
+
+    bool CompositorController::enableBlending(const std::string& groupName, bool enable)
+    {
+        auto node = gScene.find(groupName);
+        if (!node)
+        {
+            Logger::log(LogLevel::Information,  "group %s is not present", groupName.c_str());
+            return false;
+        }
+
+        auto group = node->group();
+        if (!group)
+        {
+            Logger::log(LogLevel::Information,  "%s is not a group", groupName.c_str());
+            return false; // TODO: logging
+        }
+	group->enableBlending(enable);
+        return true;
+    }
+
+    bool CompositorController::setBlendingFactors(const std::string& groupName, uint32_t source, uint32_t destination)
+    {
+        auto node = gScene.find(groupName);
+        if (!node)
+        {
+            Logger::log(LogLevel::Information,  "group %s is not present", groupName.c_str());
+            return false;
+        }
+
+        auto group = node->group();
+        if (!group)
+        {
+            Logger::log(LogLevel::Information,  "%s is not a group", groupName.c_str());
+            return false; // TODO: logging
+        }
+	group->setBlendingFactors(source, destination);
+        return true;
+    }
 }

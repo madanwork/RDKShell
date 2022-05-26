@@ -62,6 +62,9 @@ public:
     void setHolePunch(bool hp) override;
     void holePunch(bool& hp) override;
 
+    void enableBlending(bool enable);
+    void setBlendingFactors(uint32_t source, uint32_t destination);
+
 protected:
     std::list<std::shared_ptr<Node>> mChildren;
     std::shared_ptr<FrameBuffer> mFbo;
@@ -73,7 +76,8 @@ protected:
     double mOpacity;
     bool mVisible;
     bool mHolePunch;
-
+    bool mBlendingEnabled;
+    uint32_t mBlendingSource, mBlendingDestination;
     std::function<void(bool, RdkShellRect)> mOnDrawFinished;
 };
 

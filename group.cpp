@@ -28,10 +28,12 @@
 namespace RdkShell
 {
 
+static bool gIsBlendingDisabledNow = false;
+
 Group::Group(std::string name, std::function<void(bool, RdkShellRect)> onDrawFinished)
     : mChildren(), mMatrix(), mPositionX(0), mPositionY(0), mWidth(1280), mHeight(720)
     , mScaleX(1.0), mScaleY(1.0), mOpacity(1.0), mVisible(true), mHolePunch(false)
-    , mOnDrawFinished(onDrawFinished)
+    , mOnDrawFinished(onDrawFinished), mBlendingEnabled(false), mBlendingSource(GL_ONE), mBlendingDestination(GL_ONE_MINUS_SRC_ALPHA)
     // NOTE: mWidth and mHeight should probably be initialized with screen resolution from essos
 {
     mName = name;
@@ -139,6 +141,18 @@ void Group::draw(bool&, RdkShellRect&)
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    if (mBlendingEnabled)
+    {
+        glBlendFunc(mBlendingSource, mBlendingDestination);
+    }
+    else
+    {	    
+        if (gIsBlendingDisabledNow)
+        {		
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	    gIsBlendingDisabledNow = false;
+        }
+    }
     for (auto& child : mChildren)
     {
         bool needsHolePunch = false;
@@ -158,5 +172,22 @@ void Group::draw(bool&, RdkShellRect&)
     // FIXME: Opacity not handled
 }
 
+void Group::enableBlending(bool enable)
+{
+    bool isBlendingEnabledBefore = mBlendingEnabled;
+    mBlendingEnabled = enable;
+    if (!mBlendingEnabled && isBlendingEnabledBefore)
+    {
+        gIsBlendingDisabledNow = true;
+        mBlendingSource = GL_ONE;
+        mBlendingDestination = GL_ONE_MINUS_SRC_ALPHA;
+    }	    
+}
+
+void Group::setBlendingFactors(uint32_t source, uint32_t destination)
+{
+    mBlendingSource = source;
+    mBlendingDestination = destination;
+}
 
 }

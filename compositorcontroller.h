@@ -133,6 +133,8 @@ namespace RdkShell
             static bool deleteGroup(const std::string& groupName);
             static bool setGroup(const std::string& groupName, const std::vector<std::string>& clients);
             static bool removeFromGroup(const std::string& groupName, const std::vector<std::string>& clients);
+            static bool enableBlending(const std::string& groupName, bool enable);
+            static bool setBlendingFactors(const std::string& groupName, uint32_t source, uint32_t destination);
     };
 }
 
